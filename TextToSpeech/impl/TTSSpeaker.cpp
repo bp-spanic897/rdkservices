@@ -449,7 +449,7 @@ void TTSSpeaker::createPipeline() {
     result &= gst_element_link (convert, resample);
     result &= gst_element_link (resample, m_audioSink);
 #elif defined(PLATFORM_REALTEK)
-    audiocaps = gst_caps_new_simple("audio/x-raw", "channels", G_TYPE_INT, 2, "rate", G_TYPE_INT, 48000, NULL);
+    audiocaps = gst_caps_new_simple("audio/x-raw", "channels", G_TYPE_INT, 1, "rate", G_TYPE_INT, 44100, NULL);
     g_object_set( G_OBJECT(audiofilter),  "caps",  audiocaps, NULL );
 
     gst_bin_add_many(GST_BIN(m_pipeline), m_source, convert, resample, audiofilter, decodebin, m_audioSink, m_audioVolume, NULL);
