@@ -469,6 +469,15 @@ void TTSSpeaker::createPipeline() {
         gst_bin_add_many(GST_BIN(m_pipeline), m_source, capsfilter, convert, resample, m_audioSink, NULL);
         result = gst_element_link_many (m_source,capsfilter,convert,resample,m_audioSink,NULL);
     }
+#elif defined(PLATFORM_REALTEK)
+    audiocaps = gst_caps_new_simple("audio/x-raw", "channels", G_TYPE_INT, 1, "rate", G_TYPE_INT, 44100, NULL);
+    g_object_set( G_OBJECT(audiofilter),  "caps",  audiocaps, NULL );
+
+    gst_bin_add_many(GST_BIN(m_pipeline), m_source, convert, resample, audiofilter, decodebin, m_audioSink, m_audioVolume, NULL);
+    gst_element_link (m_source, decodebin);
+    gst_element_link_many (convert, resample, audiofilter, m_audioVolume, m_audioSink, NULL);
+    g_signal_connect (decodebin, "pad-added", G_CALLBACK (cb_new_pad), convert);
+>>>>>>> 7469b8f... XIONE-2351: Remove audio conversion in pipeline of Voice Guidance
 #endif
 
     if(!result) {
