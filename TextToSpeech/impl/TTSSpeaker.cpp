@@ -406,11 +406,9 @@ void TTSSpeaker::createPipeline() {
 #elif defined(PLATFORM_REALTEK)
     GstElement *decodebin = NULL;
     GstElement *resample = NULL;
-    GstCaps *audiocaps = NULL;
-    GstElement *audiofilter = NULL;
 
     resample = gst_element_factory_make("audioresample", NULL);
-    audiofilter = gst_element_factory_make("capsfilter", NULL);
+    capsfilter = gst_element_factory_make("capsfilter", NULL);
     decodebin = gst_element_factory_make("decodebin", NULL);
     m_audioVolume = gst_element_factory_make("volume", NULL);
     m_audioSink = gst_element_factory_make("autoaudiosink", NULL);
@@ -508,11 +506,11 @@ void TTSSpeaker::createPipeline() {
     }
 #elif defined(PLATFORM_REALTEK)
     audiocaps = gst_caps_new_simple("audio/x-raw", "rate", G_TYPE_INT, 44100, NULL);
-    g_object_set( G_OBJECT(audiofilter),  "caps",  audiocaps, NULL );
+    g_object_set( G_OBJECT(capsfilter),  "caps",  audiocaps, NULL );
 
-    gst_bin_add_many(GST_BIN(m_pipeline), m_source, resample, audiofilter, decodebin, m_audioSink, m_audioVolume, NULL);
+    gst_bin_add_many(GST_BIN(m_pipeline), m_source, resample, capsfilter, decodebin, m_audioSink, m_audioVolume, NULL);
     gst_element_link (m_source, decodebin);
-    gst_element_link_many (resample, audiofilter, m_audioVolume, m_audioSink, NULL);
+    gst_element_link_many (resample, capsfilter, m_audioVolume, m_audioSink, NULL);
     g_signal_connect (decodebin, "pad-added", G_CALLBACK (cb_new_pad), resample);
 #endif
 
